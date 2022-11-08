@@ -1,5 +1,4 @@
 // Import the functions you need from the SDKs you need
-import firebase from "firebase/app"
 import { initializeApp } from "firebase/app";
 import {default as oldFirebase} from "firebase/compat/app"
 
@@ -25,5 +24,5 @@ if (!oldFirebase.apps.length) {
 const firebaseApp = initializeApp(firebaseConfig)
 
 // export
-export const oldfirebase = oldFirebase;
+export {oldFirebase}
 export default firebaseApp;

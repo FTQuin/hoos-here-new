@@ -1,22 +1,22 @@
-import React from "react";
+import React, {memo, useState} from "react";
 
-export default function AttendanceEntry({id, date, dataset}) {
-  // use State for live changes
-  const [vote, setVote] = React.useState(dataset.students[id].attendance[date]);
+const AttendanceEntry = memo(({val}) => {
+  let [value, setVal] = useState(val);
 
   function handleClick() {
-    setVote((vote+1) % dataset.values.length);
-    dataset.students[id].attendance[date] = vote;
+    console.log("clicked");
+    setVal((value+1) % 3);
   }
 
   return (
       <>
         <td className="border"
             onClick={handleClick}>
-          <p className="text-center">
-            {dataset.values[vote]}
-          </p>
+          <div className="text-center">
+            {value}
+          </div>
         </td>
       </>
   );
-}
+});
+export default AttendanceEntry;

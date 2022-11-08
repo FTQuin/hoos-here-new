@@ -3,7 +3,8 @@ import {useRouter} from 'next/router';
 
 //firebase
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-import firebase from "../firebase/clientApp";
+import {oldFirebase} from "../firebase/clientApp";
+import "firebase/compat/auth";
 
 export default function Home() {
 
@@ -18,7 +19,7 @@ export default function Home() {
     signInSuccessUrl: "/",
     // Google as the only included Auth Provider.
     // You could add and configure more here!
-    signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
+    signInOptions: [oldFirebase.auth.GoogleAuthProvider.PROVIDER_ID],
   };
 
   // HTML
@@ -40,8 +41,11 @@ export default function Home() {
               Go to demo
             </button>
             <div className="p-3 bg-blue-500">
-              <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+              <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={oldFirebase.auth()} />
             </div>
+            <button onClick={() => oldFirebase.auth().signOut()}>
+              Sign Out
+            </button>
           </main>
         </div>
       </>

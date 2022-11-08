@@ -16,7 +16,7 @@ export default function Home() {
     // Popup signin flow rather than redirect flow.
     signInFlow: 'popup',
     // Redirect to / after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-    signInSuccessUrl: "/",
+    signInSuccessUrl: "/dashboard",
     // Google as the only included Auth Provider.
     // You could add and configure more here!
     signInOptions: [oldFirebase.auth.GoogleAuthProvider.PROVIDER_ID],

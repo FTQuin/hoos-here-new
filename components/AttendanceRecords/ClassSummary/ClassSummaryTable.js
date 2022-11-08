@@ -5,9 +5,12 @@ import AttendanceEntry from "../AttendanceEntry";
 const ClassSummaryTable = memo(({course_obj}) => {
   if(!course_obj) return;
 
-  let dates = Object.values(course_obj.dates).map((date) => {
-    return date.info.date;
-  })
+  let dates = null;
+  if(course_obj.dates) {
+    dates = Object.values(course_obj.dates).map((date) => {
+      return date.info.date;
+    })
+  }
   let students = [];
 
   let i = 0;

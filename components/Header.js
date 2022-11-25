@@ -1,5 +1,5 @@
 // images
-import logoPic from '../public/hoos-here-logo.png'
+import logoPic from '../public/logo 3.png'
 
 // other
 import Image from 'next/image'

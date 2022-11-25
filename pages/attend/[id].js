@@ -4,12 +4,16 @@ import Header from '../../components/Header';
 // ---- other ----
 import {useEffect, useState} from "react";
 import {useRouter} from "next/router";
+import {child, equalTo, get, getDatabase, limitToFirst, orderByChild, query, ref, set} from "firebase/database";
 
 export default function Course() {
   // ---- vars ----
   // Next.js router
   const router = useRouter();
   let course_id = router.query.id;
+
+  // database ref
+  let db = getDatabase();
 
   // attendance vars
   let [submitted, setSubmitted] = useState(false);
@@ -18,48 +22,53 @@ export default function Course() {
   // ---- logic ----
   // request to get course name from course id
   useEffect(() => {
-    // wait for the useRouter hook to asynchronously get the course id
-    if (!course_id) return;
+    // wait for the useRouter hook to asynchronously get the course id and database
+    if (!course_id || !db) return;
 
-    // if course_id has val, call api to get course from db
-    const fetchCourse = async () => {
-      const response = await fetch(`/api/getCourse`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({'course_id': course_id}),
-      });
+    // if course_id and db has val, course from db
+    let courseRef = ref(db,'courses/' + course_id);
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      const courseInfo = await response.json();
-      setCourseName(courseInfo.name);
-    }
-    fetchCourse();
+    get(child(courseRef, 'info/name')).then(s => {
+      setCourseName(s.val());
+    })
   }, [course_id]);
 
   // request to submit attendance entry
   const onSubmit = async (e) => {
     e.preventDefault();
     let student_id = e.target.elements[0].value;
-    const response = await fetch("/api/submitAttendEntry", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({'course_id': course_id,
-                                  'student_id': student_id}),
+    // const response = await fetch("/api/submitAttendEntry", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify({'course_id': course_id,
+    //                               'student_id': student_id}),
+    // });
+    //
+    // if (!response.ok)
+    //   throw new Error(`Error: ${response.statusMessage}`);
+    //
+    // const data = await response.json();
+    // console.log('POST: ', data);
+
+    let datesRef = ref(db, 'courses/' + course_id + '/dates');
+    let studentRef = ref(db, 'courses/' + course_id + '/students');
+
+    // get course
+    let q = query(datesRef, orderByChild('info/open'), equalTo(true), limitToFirst(1))
+    // let q = query(datesRef, orderByChild('info/open'));
+
+    get(q).then((s) => {
+      s.forEach((d) => {
+        let student_name = student_id.split('@')[0];
+        set(child(datesRef, d.key + '/records/' + student_name), 1)
+        set(child(studentRef, student_name), {name: student_name});
+        setSubmitted(true);
+      });
+    }).catch((e) => {
+      console.log(e);
     });
-
-    if (!response.ok)
-      throw new Error(`Error: ${response.statusMessage}`);
-
-    const data = await response.json();
-    console.log('POST: ', data);
-    setSubmitted(true);
   };
 
   // ---- render ----

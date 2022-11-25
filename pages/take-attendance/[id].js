@@ -67,7 +67,8 @@ export default function TakeAttendance() {
         {/*QR Code*/}
         <div className="m-auto p-3 ">
           <Canvas
-            text={'http://localhost:3000/attend/'+course_id}
+            text={'https://main.d1dl7joszkicd7.amplifyapp.com/' + course_id}
+            // text={window.location.origin + course_id}
             options={{
               type: 'image/jpeg',
               quality: 0.3,

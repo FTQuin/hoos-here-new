@@ -52,20 +52,19 @@ export default function Course() {
     // const data = await response.json();
     // console.log('POST: ', data);
 
+    let courseRef = ref(db, 'courses/' + course_id);
     let datesRef = ref(db, 'courses/' + course_id + '/dates');
     let studentRef = ref(db, 'courses/' + course_id + '/students');
 
     // get course
-    let q = query(datesRef, orderByChild('info/open'), equalTo(true), limitToFirst(1))
-    // let q = query(datesRef, orderByChild('info/open'));
+    let q = query(courseRef, orderByChild('info/open'), equalTo(true), limitToFirst(1));
 
-    get(q).then((s) => {
-      s.forEach((d) => {
-        let student_name = student_id.split('@')[0];
-        set(child(datesRef, d.key + '/records/' + student_name), 1)
-        set(child(studentRef, student_name), {name: student_name});
-        setSubmitted(true);
-      });
+    // TODO: make sure there is only one open course
+    await get(child(courseRef, 'info/openCourse')).then(async (s) => {
+      let student_name = student_id.split('@')[0];
+      await set(child(datesRef, s.val() + '/records/' + student_name), 1);
+      await set(child(studentRef, student_name), {name: student_name});
+      setSubmitted(true);
     }).catch((e) => {
       console.log(e);
     });

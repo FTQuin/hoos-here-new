@@ -5,7 +5,7 @@ import LiveAttendanceList from "../../components/AttendanceRecords/LiveAttendanc
 // ---- firebase ----
 import firebaseApp from "../../firebase/clientApp";
 // database
-import {equalTo, query, ref, getDatabase, orderByChild, get, push, child,} from 'firebase/database';
+import {equalTo, query, set, ref, getDatabase, orderByChild, get, push, child,} from 'firebase/database';
 // auth
 import { getAuth } from 'firebase/auth'
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -44,13 +44,15 @@ export default function TakeAttendance() {
         });
       });
 
-      push(child(courseRef, "dates"), {
+      await push(child(courseRef, "dates"), {
         info: {
           "date": Date.now(),
-          "open": true
         },
         records: student_keys
+      }).then((s) => {
+        set(child(courseRef, "info/openCourse"), s.key);
       });
+
     }
 
     if(user) addDate();
